@@ -4,7 +4,6 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
 
 / {
 	compatible = "xiaomi,mi-router-3-pro", "mediatek,mt7621-soc";
@@ -25,60 +24,43 @@
 	leds {
 		compatible = "gpio-leds";
 
-		led_status_red: led-0 {
+		led_status_red: status_red {
 			label = "red:status";
-			color = <LED_COLOR_ID_RED>;
-			function = LED_FUNCTION_STATUS;
 			gpios = <&gpio 6 GPIO_ACTIVE_LOW>;
 		};
 
-		led_status_blue: led-1 {
+		led_status_blue: status_blue {
 			label = "blue:status";
-			color = <LED_COLOR_ID_BLUE>;
-			function = LED_FUNCTION_STATUS;
 			gpios = <&gpio 8 GPIO_ACTIVE_LOW>;
 		};
 
-		led_status_yellow: led-2 {
+		led_status_yellow: status_yellow {
 			label = "yellow:status";
-			color = <LED_COLOR_ID_YELLOW>;
-			function = LED_FUNCTION_STATUS;
 			gpios = <&gpio 10 GPIO_ACTIVE_LOW>;
 		};
 
-		led-3 {
+		wan_amber {
 			label = "amber:wan";
-			color = <LED_COLOR_ID_AMBER>;
-			function = LED_FUNCTION_WAN;
 			gpios = <&gpio 14 GPIO_ACTIVE_LOW>;
-			linux,default-trigger = "mt7530-0:04:1Gbps";
+			linux,default-trigger = "dsa-0.0:04:1Gbps";
 		};
 
-		led-4 {
+		lan3_amber {
 			label = "amber:lan3";
-			color = <LED_COLOR_ID_AMBER>;
-			function = LED_FUNCTION_LAN;
-			function-enumerator = <3>;
 			gpios = <&gpio 13 GPIO_ACTIVE_LOW>;
-			linux,default-trigger = "mt7530-0:03:1Gbps";
+			linux,default-trigger = "dsa-0.0:03:1Gbps";
 		};
 
-		led-5 {
+		lan2_amber {
 			label = "amber:lan2";
-			color = <LED_COLOR_ID_AMBER>;
-			function = LED_FUNCTION_LAN;
-			function-enumerator = <2>;
 			gpios = <&gpio 16 GPIO_ACTIVE_LOW>;
-			linux,default-trigger = "mt7530-0:02:1Gbps";
+			linux,default-trigger = "dsa-0.0:02:1Gbps";
 		};
 
-		led-6 {
+		lan1_amber {
 			label = "amber:lan1";
-			color = <LED_COLOR_ID_AMBER>;
-			function = LED_FUNCTION_LAN;
-			function-enumerator = <1>;
 			gpios = <&gpio 15 GPIO_ACTIVE_LOW>;
-			linux,default-trigger = "mt7530-0:01:1Gbps";
+			linux,default-trigger = "dsa-0.0:01:1Gbps";
 		};
 	};
 
@@ -194,23 +176,7 @@
 };
 
 &gmac0 {
-	nvmem-cells = <&macaddr_factory_e006>;
-	nvmem-cell-names = "mac-address";
-};
-
-&gmac1 {
-	status = "okay";
-	label = "wan";
-	phy-handle = <&ethphy4>;
-
-	nvmem-cells = <&macaddr_factory_e000>;
-	nvmem-cell-names = "mac-address";
-};
-
-&mdio {
-	ethphy4: ethernet-phy@4 {
-		reg = <4>;
-	};
+	mtd-mac-address = <&factory 0xe006>;
 };
 
 &switch0 {
@@ -229,6 +195,12 @@
 			status = "okay";
 			label = "lan1";
 		};
+
+		port@4 {
+			status = "okay";
+			label = "wan";
+			mtd-mac-address = <&factory 0xe000>;
+		};
 	};
 };
 
@@ -236,19 +208,5 @@
 	gpio {
 		groups = "jtag", "uart2", "uart3", "wdt";
 		function = "gpio";
-	};
-};
-
-&factory {
-	compatible = "nvmem-cells";
-	#address-cells = <1>;
-	#size-cells = <1>;
-
-	macaddr_factory_e000: macaddr@e000 {
-		reg = <0xe000 0x6>;
-	};
-
-	macaddr_factory_e006: macaddr@e006 {
-		reg = <0xe006 0x6>;
 	};
 };

@@ -10,16 +10,17 @@
 &mdio0 {
 	status = "okay";
 
+	phy-mask = <4>;
 	phy4: ethernet-phy@4 {
+		phy-mode = "rgmii";
 		reg = <4>;
-		max-speed = <100>;
 	};
 };
 
 &eth0 {
 	status = "okay";
 
-	phy-mode = "rgmii-txid";
+	phy-mode = "rgmii";
 	phy-handle = <&phy4>;
 
 	gmac-config {

@@ -98,7 +98,7 @@
 	flash@0 {
 		compatible = "jedec,spi-nor";
 		reg = <0>;
-		spi-max-frequency = <50000000>;
+		spi-max-frequency = <80000000>;
 		m25p,fast-read;
 
 		partitions {
@@ -168,8 +168,7 @@
 };
 
 &ethernet {
-	nvmem-cells = <&macaddr_factory_4>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&factory 0x4>;
 };
 
 &wmac {
@@ -177,14 +176,4 @@
 	pinctrl-names = "default", "pa_gpio";
 	pinctrl-0 = <&pa_pins>;
 	pinctrl-1 = <&pa_gpio_pins>;
-};
-
-&factory {
-	compatible = "nvmem-cells";
-	#address-cells = <1>;
-	#size-cells = <1>;
-
-	macaddr_factory_4: macaddr@4 {
-		reg = <0x4 0x6>;
-	};
 };

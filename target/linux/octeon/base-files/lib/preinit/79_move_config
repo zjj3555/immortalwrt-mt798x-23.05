@@ -15,15 +15,13 @@ octeon_move_config() {
 	. /lib/functions.sh
 
 	case "$(board_name)" in
-		erlite|\
-		ubnt,usg)
+		erlite)
 			move_config "/dev/sda1"
 			;;
 		itus,shield-router)
 			move_config "/dev/mmcblk1p1"
 			;;
-		ubnt,edgerouter-4 | \
-		ubnt,edgerouter-6p)
+		ubnt,edgerouter-4)
 			move_config "/dev/mmcblk0p1"
 			;;
 	esac

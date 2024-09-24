@@ -99,6 +99,8 @@
 &mdio0 {
 	status = "okay";
 
+	phy-mask = <0>;
+
 	phy0: ethernet-phy@0 {
 		reg = <0>;
 		phy-mode = "sgmii";
@@ -116,8 +118,7 @@
 
 	pll-data = <0x03000101 0x00000101 0x00001919>;
 
-	nvmem-cells = <&macaddr_uboot_2e010>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&uboot 0x2e010>;
 	phy-mode = "sgmii";
 	phy-handle = <&phy0>;
 };
@@ -130,26 +131,8 @@
 	status = "okay";
 };
 
-&usb_phy1 {
-	status = "okay";
-};
-
-&usb1 {
-	status = "okay";
-};
-
 &wmac {
 	status = "okay";
 
 	mtd-cal-data = <&art 0x1000>;
-};
-
-&uboot {
-	compatible = "nvmem-cells";
-	#address-cells = <1>;
-	#size-cells = <1>;
-
-	macaddr_uboot_2e010: macaddr@2e010 {
-		reg = <0x2e010 0x6>;
-	};
 };

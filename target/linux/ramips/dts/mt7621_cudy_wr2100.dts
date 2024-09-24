@@ -78,8 +78,7 @@
 };
 
 &gmac0 {
-	nvmem-cells = <&macaddr_bdinfo_de00>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&bdinfo 0xde00>;
 };
 
 &pcie {
@@ -169,22 +168,6 @@
 	};
 };
 
-&gmac1 {
-	status = "okay";
-	label = "wan";
-	phy-handle = <&ethphy4>;
-
-	nvmem-cells = <&macaddr_bdinfo_de00>;
-	nvmem-cell-names = "mac-address";
-	mac-address-increment = <1>;
-};
-
-&mdio {
-	ethphy4: ethernet-phy@4 {
-		reg = <4>;
-	};
-};
-
 &switch0 {
 	ports {
 		port@0 {
@@ -206,15 +189,13 @@
 			status = "okay";
 			label = "lan4";
 		};
-	};
-};
 
-&bdinfo {
-	compatible = "nvmem-cells";
-	#address-cells = <1>;
-	#size-cells = <1>;
+		port@4 {
+			status = "okay";
+			label = "wan";
 
-	macaddr_bdinfo_de00: macaddr@de00 {
-		reg = <0xde00 0x6>;
+			mtd-mac-address = <&bdinfo 0xde00>;
+			mtd-mac-address-increment = <1>;
+		};
 	};
 };

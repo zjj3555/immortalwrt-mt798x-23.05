@@ -141,23 +141,7 @@
 };
 
 &gmac0 {
-	nvmem-cells = <&macaddr_factory_3fff4>;
-	nvmem-cell-names = "mac-address";
-};
-
-&gmac1 {
-	status = "okay";
-	label = "wan";
-	phy-handle = <&ethphy4>;
-
-	nvmem-cells = <&macaddr_factory_3fffa>;
-	nvmem-cell-names = "mac-address";
-};
-
-&mdio {
-	ethphy4: ethernet-phy@4 {
-		reg = <4>;
-	};
+	mtd-mac-address = <&factory 0x3fff4>;
 };
 
 &switch0 {
@@ -176,6 +160,12 @@
 			status = "okay";
 			label = "lan3";
 		};
+
+		port@4 {
+			status = "okay";
+			label = "wan";
+			mtd-mac-address = <&factory 0x3fffa>;
+		};
 	};
 };
 
@@ -183,19 +173,5 @@
 	gpio {
 		groups = "jtag", "uart3", "wdt";
 		function = "gpio";
-	};
-};
-
-&factory {
-	compatible = "nvmem-cells";
-	#address-cells = <1>;
-	#size-cells = <1>;
-
-	macaddr_factory_3fff4: macaddr@3fff4 {
-		reg = <0x3fff4 0x6>;
-	};
-
-	macaddr_factory_3fffa: macaddr@3fffa {
-		reg = <0x3fffa 0x6>;
 	};
 };

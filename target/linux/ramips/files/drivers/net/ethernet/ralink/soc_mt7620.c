@@ -144,8 +144,7 @@ static void mt7620_port_init(struct fe_priv *priv, struct device_node *np)
 	struct mt7620_gsw *gsw = (struct mt7620_gsw *)priv->soc->swpriv;
 	const __be32 *_id = of_get_property(np, "reg", NULL);
 	const __be32 *phy_addr;
-	phy_interface_t phy_mode = PHY_INTERFACE_MODE_NA;
-	int size, id;
+	int phy_mode, size, id;
 	int shift = 12;
 	u32 val, mask = 0;
 	u32 val_delay = 0;
@@ -174,7 +173,7 @@ static void mt7620_port_init(struct fe_priv *priv, struct device_node *np)
 		priv->phy->phy_fixed[id] = NULL;
 	}
 
-	of_get_phy_mode(np, &phy_mode);
+	phy_mode = of_get_phy_mode(np);
 	switch (phy_mode) {
 	case PHY_INTERFACE_MODE_RGMII:
 		mask = 0;
@@ -286,7 +285,7 @@ static void mt7620_port_init(struct fe_priv *priv, struct device_node *np)
 	}
 }
 
-static void mt7620_fe_reset(struct fe_priv *priv)
+static void mt7620_fe_reset(void)
 {
 	fe_reset(MT7620A_RESET_FE | MT7620A_RESET_ESW);
 }

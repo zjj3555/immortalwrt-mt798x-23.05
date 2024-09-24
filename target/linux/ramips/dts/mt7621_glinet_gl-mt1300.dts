@@ -14,7 +14,7 @@
 		led-failsafe = &led_run;
 		led-running = &led_run;
 		led-upgrade = &led_run;
-		label-mac-device = &gmac1;
+		label-mac-device = &wan;
 	};
 
 	chosen {
@@ -115,24 +115,8 @@
 };
 
 &gmac0 {
-	nvmem-cells = <&macaddr_factory_4000>;
-	nvmem-cell-names = "mac-address";
-	mac-address-increment = <1>;
-};
-
-&gmac1 {
-	status = "okay";
-	label = "wan";
-	phy-handle = <&ethphy4>;
-
-	nvmem-cells = <&macaddr_factory_4000>;
-	nvmem-cell-names = "mac-address";
-};
-
-&mdio {
-	ethphy4: ethernet-phy@4 {
-		reg = <4>;
-	};
+	mtd-mac-address = <&factory 0x4000>;
+	mtd-mac-address-increment = <1>;
 };
 
 &switch0 {
@@ -146,6 +130,12 @@
 			status = "okay";
 			label = "lan2";
 		};
+
+		wan: port@4 {
+			status = "okay";
+			label = "wan";
+			mtd-mac-address = <&factory 0x4000>;
+		};
 	};
 };
 
@@ -157,15 +147,5 @@
 	gpio {
 		group = "wdt", "jtag";
 		function = "gpio";
-	};
-};
-
-&factory {
-	compatible = "nvmem-cells";
-	#address-cells = <1>;
-	#size-cells = <1>;
-
-	macaddr_factory_4000: macaddr@4000 {
-		reg = <0x4000 0x6>;
 	};
 };

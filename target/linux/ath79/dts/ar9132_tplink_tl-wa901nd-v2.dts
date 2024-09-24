@@ -17,6 +17,12 @@
 		label-mac-device = &eth0;
 	};
 
+	extosc: ref {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <40000000>;
+	};
+
 	keys {
 		compatible = "gpio-keys";
 
@@ -54,6 +60,10 @@
 			linux,default-trigger = "phy0tpt";
 		};
 	};
+};
+
+&pll {
+	clocks = <&extosc>;
 };
 
 &spi {
@@ -108,8 +118,7 @@
 &eth0 {
 	status = "okay";
 
-	nvmem-cells = <&macaddr_uboot_1fc00>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&uboot 0x1fc00>;
 
 	phy-handle = <&phy12>;
 };
@@ -118,16 +127,5 @@
 	status = "okay";
 
 	mtd-cal-data = <&art 0x1000>;
-	nvmem-cells = <&macaddr_uboot_1fc00>;
-	nvmem-cell-names = "mac-address";
-};
-
-&uboot {
-	compatible = "nvmem-cells";
-	#address-cells = <1>;
-	#size-cells = <1>;
-
-	macaddr_uboot_1fc00: macaddr@1fc00 {
-		reg = <0x1fc00 0x6>;
-	};
+	mtd-mac-address = <&uboot 0x1fc00>;
 };

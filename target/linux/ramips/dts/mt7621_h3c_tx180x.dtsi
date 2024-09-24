@@ -40,29 +40,13 @@
 
 		led_status_amber: led-0 {
 			label = "amber:status";
-			color = <LED_COLOR_ID_AMBER>;
-			function = LED_FUNCTION_STATUS;
 			gpios = <&gpio 15 GPIO_ACTIVE_LOW>;
 		};
 
 		led_status_green: led-1 {
 			label = "green:status";
-			color = <LED_COLOR_ID_GREEN>;
-			function = LED_FUNCTION_STATUS;
 			gpios = <&gpio 16 GPIO_ACTIVE_LOW>;
 		};
-	};
-};
-
-&gmac1 {
-	status = "okay";
-	label = "wan";
-	phy-handle = <&ethphy4>;
-};
-
-&mdio {
-	ethphy4: ethernet-phy@4 {
-		reg = <4>;
 	};
 };
 
@@ -138,6 +122,10 @@
 	};
 };
 
+&pcie2 {
+	status = "disabled";
+};
+
 &state_default {
 	gpio {
 		groups = "jtag";
@@ -160,6 +148,11 @@
 		port@3 {
 			status = "okay";
 			label = "lan3";
+		};
+
+		port@4 {
+			status = "okay";
+			label = "wan";
 		};
 	};
 };

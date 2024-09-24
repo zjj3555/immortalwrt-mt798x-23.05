@@ -30,6 +30,10 @@
 			status = "okay";
 		};
 
+		ess-psgmii@98000 {
+			status = "okay";
+		};
+
 		tcsr@1949000 {
 			compatible = "qcom,tcsr";
 			reg = <0x1949000 0x100>;
@@ -69,6 +73,16 @@
 		};
 
 		watchdog@b017000 {
+			status = "okay";
+		};
+
+		ess-switch@c000000 {
+			status = "okay";
+			switch_lan_bmp = <0x18>;
+			switch_wan_bmp = <0x20>;
+		};
+
+		edma@c080000 {
 			status = "okay";
 		};
 	};
@@ -193,17 +207,6 @@
 				label = "ART";
 				reg = <0x170000 0x10000>;
 				read-only;
-				compatible = "nvmem-cells";
-				#address-cells = <1>;
-				#size-cells = <1>;
-
-				precal_art_1000: precal@1000 {
-					reg = <0x1000 0x2f20>;
-				};
-
-				precal_art_5000: precal@5000 {
-					reg = <0x5000 0x2f20>;
-				};
 			};
 
 			firmware@180000 {
@@ -221,7 +224,7 @@
 	status = "okay";
 
 	spidev1: spi@0 {
-		compatible = "silabs,si3210";
+		compatible = "siliconlabs,si3210";
 		reg = <0>;
 		spi-max-frequency = <24000000>;
 	};
@@ -344,14 +347,10 @@
 
 &wifi0 {
 	status = "okay";
-	nvmem-cell-names = "pre-calibration";
-	nvmem-cells = <&precal_art_1000>;
 	qcom,ath10k-calibration-variant = "GL-S1300";
 };
 
 &wifi1 {
 	status = "okay";
-	nvmem-cell-names = "pre-calibration";
-	nvmem-cells = <&precal_art_5000>;
 	qcom,ath10k-calibration-variant = "GL-S1300";
 };

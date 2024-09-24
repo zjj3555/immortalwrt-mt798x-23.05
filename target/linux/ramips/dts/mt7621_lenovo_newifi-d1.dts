@@ -5,7 +5,7 @@
 
 / {
 	compatible = "lenovo,newifi-d1", "mediatek,mt7621-soc";
-	model = "Lenovo Newifi D1";
+	model = "Newifi-D1";
 
 	aliases {
 		led-boot = &led_blue;
@@ -46,12 +46,6 @@
 			label = "reset";
 			gpios = <&gpio 15 GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_RESTART>;
-		};
-
-		wps {
-			label = "wps";
-			gpios = <&gpio 18 GPIO_ACTIVE_LOW>;
-			linux,code = <KEY_WPS_BUTTON>;
 		};
 	};
 
@@ -138,23 +132,7 @@
 };
 
 &gmac0 {
-	nvmem-cells = <&macaddr_factory_e000>;
-	nvmem-cell-names = "mac-address";
-};
-
-&gmac1 {
-	status = "okay";
-	label = "wan";
-	phy-handle = <&ethphy4>;
-
-	nvmem-cells = <&macaddr_factory_e006>;
-	nvmem-cell-names = "mac-address";
-};
-
-&mdio {
-	ethphy4: ethernet-phy@4 {
-		reg = <4>;
-	};
+	mtd-mac-address = <&factory 0xe000>;
 };
 
 &switch0 {
@@ -168,26 +146,18 @@
 			status = "okay";
 			label = "lan1";
 		};
+
+		port@4 {
+			status = "okay";
+			label = "wan";
+			mtd-mac-address = <&factory 0xe006>;
+		};
 	};
 };
 
 &state_default {
 	gpio {
-		groups = "jtag", "uart2", "wdt";
+		groups = "jtag", "uart2";
 		function = "gpio";
-	};
-};
-
-&factory {
-	compatible = "nvmem-cells";
-	#address-cells = <1>;
-	#size-cells = <1>;
-
-	macaddr_factory_e000: macaddr@e000 {
-		reg = <0xe000 0x6>;
-	};
-
-	macaddr_factory_e006: macaddr@e006 {
-		reg = <0xe006 0x6>;
 	};
 };
