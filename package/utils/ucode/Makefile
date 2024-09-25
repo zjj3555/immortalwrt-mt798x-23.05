@@ -8,36 +8,32 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ucode
-PKG_RELEASE:=3
+PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL=https://github.com/jow-/ucode.git
-PKG_SOURCE_DATE:=2024-07-11
-PKG_SOURCE_VERSION:=1a8a0bcf725520820802ad433db22d8f64fbed6c
-PKG_MIRROR_HASH:=ccacb0efe909248230fb0953433a74a2251ac0069d25a731b128e0ee8d6afeb3
+PKG_MIRROR_HASH:=7a4d35d14ede7d853b2095ee239a86aab0b17da2b8cfac814dfa58fabec6374b
+PKG_SOURCE_DATE:=2024-04-15
+PKG_SOURCE_VERSION:=cfe137be068a7ba1895d3c9bcb7b38d21e5a95dd
 PKG_MAINTAINER:=Jo-Philipp Wich <jo@mein.io>
 PKG_LICENSE:=ISC
 
 PKG_ABI_VERSION:=20230711
-HOST_BUILD_DEPENDS:=libjson-c/host
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/host-build.mk
 include $(INCLUDE_DIR)/cmake.mk
 
-CMAKE_OPTIONS += \
-	-DSOVERSION=$(PKG_ABI_VERSION)
-
-CMAKE_HOST_OPTIONS += \
-	-DCMAKE_SKIP_RPATH=FALSE \
-	-DCMAKE_INSTALL_RPATH="${STAGING_DIR_HOSTPKG}/lib"
+CMAKE_OPTIONS += -DSOVERSION=$(PKG_ABI_VERSION)
 
 ifeq ($(HOST_OS),Darwin)
   CMAKE_HOST_OPTIONS += \
-	-DCMAKE_MACOSX_RPATH=1
+	-DCMAKE_SKIP_RPATH=FALSE \
+	-DCMAKE_MACOSX_RPATH=1 \
+	-DCMAKE_INSTALL_RPATH="${STAGING_DIR_HOSTPKG}/lib"
 else
   CMAKE_HOST_OPTIONS += \
-	-DUSE_RPATH="${STAGING_DIR_HOSTPKG}/lib"
+	-DSOVERSION=$(PKG_ABI_VERSION)
 endif
 
 CMAKE_HOST_OPTIONS += \
@@ -53,6 +49,13 @@ CMAKE_HOST_OPTIONS += \
 	-DDEBUG_SUPPORT=ON \
 	-DLOG_SUPPORT=OFF
 
+ifeq ($(CONFIG_TARGET_ipq95xx)$(CONFIG_TARGET_ipq53xx),y)
+TARGET_CFLAGS += -DQCA_WIFI_7
+endif
+
+ifeq ($(CONFIG_TARGET_ipq807x)$(CONFIG_TARGET_ipq60xx)$(CONFIG_TARGET_ipq50xx)$(CONFIG_TARGET_ipq40xx),y)
+TARGET_CFLAGS += -DQCA_v4_4
+endif
 
 define Package/ucode/default
   SUBMENU:=ucode
@@ -82,6 +85,11 @@ define Package/libucode
   DEPENDS:=+libjson-c
 endef
 
+define Build/Prepare
+	$(Build/Prepare/Default)
+	$(CP) $(STAGING_DIR)/usr/include/mac80211/uapi/linux/nl80211.h $(PKG_BUILD_DIR)/nl80211_copy.h
+endef
+
 define Package/libucode/description
  The libucode package provides the shared runtime library for the ucode interpreter.
 endef
@@ -98,7 +106,7 @@ define UcodeModule
  define Package/ucode-mod-$(strip $(1))
   $(Package/ucode/default)
   TITLE+= ($(strip $(1)) module)
-  DEPENDS:=+ucode $(3)
+  DEPENDS:=ucode $(3)
  endef
 
  define Package/ucode-mod-$(strip $(1))/description
@@ -147,7 +155,7 @@ $(eval $(call UcodeModule, \
 	The math plugin provides access to various <math.h> procedures.))
 
 $(eval $(call UcodeModule, \
-	nl80211, NL80211_SUPPORT, +libnl-tiny +libubox, \
+	nl80211, NL80211_SUPPORT, +libnl-tiny +libubox +kmod-mac80211, \
 	The nl80211 plugin provides access to the Linux wireless 802.11 netlink API.))
 
 $(eval $(call UcodeModule, \
