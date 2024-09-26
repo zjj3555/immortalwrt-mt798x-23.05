@@ -45,7 +45,7 @@ stop_service() {
 }
 
 service_running() {
-	if [ -f "/lib/wifi/mtwifi.lua" ]; then
+        if [ -f "/lib/wifi/mtwifi.lua" ]; then
         ubus -t 120 wait_for network.interface.lan
         /sbin/wifi reload_legacy
 	fi
@@ -154,4 +154,3 @@ shutdown() {
 	ifdown -a
 	sleep 1
 }
-
