@@ -234,14 +234,14 @@
  			};
 
  			partition@380000 {
- 				label = "fip";
- 				reg = <0x380000 0x0180000>;
- 			};
-
- 			partition@500000 {
- 				label = "ubi";
- 				reg = <0x500000 0x7300000>;
- 			};
+				label = "fip";
+				reg = <0x380000 0x0200000>;
+				read-only;
+			};
+			partition@580000 {
+				label = "ubi";
+				reg = <0x580000 0x7800000>;
+			};
  		};
 	};
 };
