@@ -114,7 +114,7 @@
 		compatible = "mediatek,eth-mac";
 		reg = <1>;
 		phy-mode = "2500base-x";
-		
+		label = "wan";
 		fixed-link {
 			speed = <2500>;
 			full-duplex;
