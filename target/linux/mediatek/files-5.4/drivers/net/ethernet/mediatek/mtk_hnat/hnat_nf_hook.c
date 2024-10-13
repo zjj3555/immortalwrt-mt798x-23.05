@@ -1226,13 +1226,10 @@ static unsigned int hnat_ipv6_get_nexthop(struct sk_buff *skb,
 	const struct in6_addr *ipv6_nexthop;
 	struct neighbour *neigh = NULL;
 	struct dst_entry *dst = skb_dst(skb);
-	struct ethhdr *eth;
+	
 
-	if (hw_path->flags & FLOW_OFFLOAD_PATH_PPPOE) {
-		memcpy(eth_hdr(skb)->h_source, hw_path->eth_src, ETH_ALEN);
-		memcpy(eth_hdr(skb)->h_dest, hw_path->eth_dest, ETH_ALEN);
+	if (hw_path->flags & FLOW_OFFLOAD_PATH_PPPOE)
 		return 0;
-	}
 
 	rcu_read_lock_bh();
 	ipv6_nexthop =
@@ -1251,16 +1248,8 @@ static unsigned int hnat_ipv6_get_nexthop(struct sk_buff *skb,
 		return -1;
 	}
 
-	if (ipv6_hdr(skb)->nexthdr == NEXTHDR_IPIP) {
-		/*copy ether type for DS-Lite and MapE */
-		eth = (struct ethhdr *)(skb->data - ETH_HLEN);
-		eth->h_proto = skb->protocol;
-	} else {
-		eth = eth_hdr(skb);
-	}
-
-	ether_addr_copy(eth->h_dest, neigh->ha);
-	ether_addr_copy(eth->h_source, out->dev_addr);
+	ether_addr_copy(hw_path->eth_dest, neigh->ha);
+	ether_addr_copy(hw_path->eth_src, out->dev_addr);
 
 	rcu_read_unlock_bh();
 
@@ -1277,11 +1266,8 @@ static unsigned int hnat_ipv4_get_nexthop(struct sk_buff *skb,
 	struct rtable *rt = (struct rtable *)dst;
 	struct net_device *dev = (__force struct net_device *)out;
 
-	if (hw_path->flags & FLOW_OFFLOAD_PATH_PPPOE) {
-		memcpy(eth_hdr(skb)->h_source, hw_path->eth_src, ETH_ALEN);
-		memcpy(eth_hdr(skb)->h_dest, hw_path->eth_dest, ETH_ALEN);
+	if (hw_path->flags & FLOW_OFFLOAD_PATH_PPPOE)
 		return 0;
-	}
 
 	rcu_read_lock_bh();
 	nexthop = (__force u32)rt_nexthop(rt, ip_hdr(skb)->daddr);
@@ -1299,8 +1285,8 @@ static unsigned int hnat_ipv4_get_nexthop(struct sk_buff *skb,
 		return -1;
 	}
 
-	memcpy(eth_hdr(skb)->h_dest, neigh->ha, ETH_ALEN);
-	memcpy(eth_hdr(skb)->h_source, out->dev_addr, ETH_ALEN);
+	memcpy(hw_path->eth_dest, neigh->ha, ETH_ALEN);
+	memcpy(hw_path->eth_src, out->dev_addr, ETH_ALEN);
 
 	rcu_read_unlock_bh();
 
@@ -1327,16 +1313,16 @@ static u16 ppe_get_chkbase(struct iphdr *iph)
 	return chksum_base;
 }
 
-struct foe_entry ppe_fill_L2_info(struct ethhdr *eth, struct foe_entry entry,
+struct foe_entry ppe_fill_L2_info(struct foe_entry entry,
 				  struct flow_offload_hw_path *hw_path)
 {
 	switch (entry.bfib1.pkt_type) {
 	case IPV4_HNAPT:
 	case IPV4_HNAT:
-		entry.ipv4_hnapt.dmac_hi = swab32(*((u32 *)eth->h_dest));
-		entry.ipv4_hnapt.dmac_lo = swab16(*((u16 *)&eth->h_dest[4]));
-		entry.ipv4_hnapt.smac_hi = swab32(*((u32 *)eth->h_source));
-		entry.ipv4_hnapt.smac_lo = swab16(*((u16 *)&eth->h_source[4]));
+		entry.ipv4_hnapt.dmac_hi = swab32(*((u32 *)hw_path->eth_dest));
+ 		entry.ipv4_hnapt.dmac_lo = swab16(*((u16 *)&hw_path->eth_dest[4]));
+ 		entry.ipv4_hnapt.smac_hi = swab32(*((u32 *)hw_path->eth_src));
+ 		entry.ipv4_hnapt.smac_lo = swab16(*((u16 *)&hw_path->eth_src[4]));
 		entry.ipv4_hnapt.pppoe_id = hw_path->pppoe_sid;
 		break;
 	case IPV4_DSLITE:
@@ -1344,18 +1330,17 @@ struct foe_entry ppe_fill_L2_info(struct ethhdr *eth, struct foe_entry entry,
 	case IPV6_6RD:
 	case IPV6_5T_ROUTE:
 	case IPV6_3T_ROUTE:
-		entry.ipv6_5t_route.dmac_hi = swab32(*((u32 *)eth->h_dest));
-		entry.ipv6_5t_route.dmac_lo = swab16(*((u16 *)&eth->h_dest[4]));
-		entry.ipv6_5t_route.smac_hi = swab32(*((u32 *)eth->h_source));
-		entry.ipv6_5t_route.smac_lo =
-			swab16(*((u16 *)&eth->h_source[4]));
+ 		entry.ipv6_5t_route.dmac_hi = swab32(*((u32 *)hw_path->eth_dest));
+ 		entry.ipv6_5t_route.dmac_lo = swab16(*((u16 *)&hw_path->eth_dest[4]));
+ 		entry.ipv6_5t_route.smac_hi = swab32(*((u32 *)hw_path->eth_src));
+ 		entry.ipv6_5t_route.smac_lo = swab16(*((u16 *)&hw_path->eth_src[4]));
 		entry.ipv6_5t_route.pppoe_id = hw_path->pppoe_sid;
 		break;
 	}
 	return entry;
 }
 
-struct foe_entry ppe_fill_info_blk(struct ethhdr *eth, struct foe_entry entry,
+struct foe_entry ppe_fill_info_blk(struct foe_entry entry,
 				   struct flow_offload_hw_path *hw_path)
 {
 	entry.bfib1.psn = (hw_path->flags & FLOW_OFFLOAD_PATH_PPPOE) ? 1 : 0;
@@ -1370,7 +1355,7 @@ struct foe_entry ppe_fill_info_blk(struct ethhdr *eth, struct foe_entry entry,
 	case IPV4_HNAPT:
 	case IPV4_HNAT:
 		if (hnat_priv->data->mcast &&
-		    is_multicast_ether_addr(&eth->h_dest[0])) {
+		    is_multicast_ether_addr(&hw_path->eth_dest[0])) {
 			entry.ipv4_hnapt.iblk2.mcast = 1;
 			if (hnat_priv->data->version == MTK_HNAT_V3) {
 				entry.bfib1.sta = 1;
@@ -1389,7 +1374,7 @@ struct foe_entry ppe_fill_info_blk(struct ethhdr *eth, struct foe_entry entry,
 	case IPV6_5T_ROUTE:
 	case IPV6_3T_ROUTE:
 		if (hnat_priv->data->mcast &&
-		    is_multicast_ether_addr(&eth->h_dest[0])) {
+		    is_multicast_ether_addr(&hw_path->eth_dest[0])) {
 			entry.ipv6_5t_route.iblk2.mcast = 1;
 			if (hnat_priv->data->version == MTK_HNAT_V3) {
 				entry.bfib1.sta = 1;
@@ -1413,7 +1398,6 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 {
 	struct foe_entry entry = { 0 };
 	int whnat = IS_WHNAT(dev);
-	struct ethhdr *eth;
 	struct iphdr *iph;
 	struct ipv6hdr *ip6h;
 	struct tcpudphdr _ports;
@@ -1424,22 +1408,18 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 	int udp = 0;
 	u32 qid = 0;
 	int port_id = 0;
+	u32 payload_len = 0;
 	int mape = 0;
 	u8  dscp = 0;
+	u16 h_proto = 0;
 	struct net_device *master_dev = (struct net_device *)dev;
 	struct mtk_mac *mac;
 
 	ct = nf_ct_get(skb, &ctinfo);
 	
 
-	if (ipv6_hdr(skb)->nexthdr == NEXTHDR_IPIP)
-		/* point to ethernet header for DS-Lite and MapE */
-		eth = (struct ethhdr *)(skb->data - ETH_HLEN);
-	else
-		eth = eth_hdr(skb);
-
 	/*do not bind multicast if PPE mcast not enable*/
-	if (!hnat_priv->data->mcast && is_multicast_ether_addr(eth->h_dest))
+	if (!hnat_priv->data->mcast && is_multicast_ether_addr(hw_path->eth_dest))
 		return 0;
 
 	entry.bfib1.pkt_type = foe->udib1.pkt_type; /* Get packte type state*/
@@ -1452,7 +1432,14 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 	entry.bfib1.sp = foe->udib1.sp;
 #endif
 
-	switch (ntohs(eth->h_proto)) {
+	if (ip_hdr(skb)->version == IPVERSION_V4)
+		h_proto = ETH_P_IP;
+	else if (ip_hdr(skb)->version == IPVERSION_V6)
+		h_proto = ETH_P_IPV6;
+	else
+		return 0;
+		
+	switch (h_proto) {
 	case ETH_P_IP:
 		iph = ip_hdr(skb);
 		switch (iph->protocol) {
@@ -1781,10 +1768,10 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 	}
 
 	/* Fill Layer2 Info.*/
-	entry = ppe_fill_L2_info(eth, entry, hw_path);
+	entry = ppe_fill_L2_info(entry, hw_path);
 
 	/* Fill Info Blk*/
-	entry = ppe_fill_info_blk(eth, entry, hw_path);
+	entry = ppe_fill_info_blk(entry, hw_path);
 
 	
 	if (IS_LAN(dev) || IS_WAN(dev)) {
@@ -1792,7 +1779,7 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 		port_id = hnat_dsa_get_port(&master_dev);
 		if (port_id >= 0) {
 			if (hnat_dsa_fill_stag(dev, &entry, hw_path,
-					       ntohs(eth->h_proto), mape) < 0)
+					       h_proto, mape) < 0)
 				return 0;
 		}
 
@@ -1836,12 +1823,35 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 
 	if (IS_HQOS_MODE || skb->mark >= MAX_PPPQ_PORT_NUM)
 		qid = skb->mark & (MTK_QDMA_TX_MASK);
-	else if (IS_PPPQ_MODE && (IS_DSA_1G_LAN(dev) || IS_DSA_WAN(dev)))
+	else if (IS_PPPQ_MODE && (IS_DSA_LAN(dev) || IS_DSA_WAN(dev)))
 		qid = port_id & MTK_QDMA_TX_MASK;
 	else
 		qid = 0;
 	if ((IS_HQOS_MODE) && (dscp!=0) &&(hnat_priv->dscp_en))
 		qid = (dscp>>2)& (MTK_QDMA_TX_MASK);
+		
+	if (IS_PPPQ_MODE) {
+		if (h_proto == ETH_P_IP) {
+			iph = ip_hdr(skb);
+			if (iph->protocol == IPPROTO_TCP) {
+				skb_set_transport_header(skb, sizeof(struct iphdr));
+				payload_len = be16_to_cpu(iph->tot_len) -
+					      skb_transport_offset(skb) - tcp_hdrlen(skb);
+				/* Dispatch ACK packets to high priority queue */
+				if (payload_len == 0)
+					qid += 6;
+			}
+		} else if (h_proto == ETH_P_IPV6) {
+			ip6h = ipv6_hdr(skb);
+			if (ip6h->nexthdr == NEXTHDR_TCP) {
+				skb_set_transport_header(skb, sizeof(struct ipv6hdr));
+				payload_len = be16_to_cpu(ip6h->payload_len) - tcp_hdrlen(skb);
+				/* Dispatch ACK packets to high priority queue */
+				if (payload_len == 0)
+					qid += 6;
+			}
+		}
+	}
 		
 	if (IS_IPV4_GRP(foe)) {
 		entry.ipv4_hnapt.iblk2.dp = gmac;
@@ -1868,13 +1878,10 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 				}
 			}
 
-			if (FROM_EXT(skb) || skb_hnat_sport(skb) == NR_QDMA_PORT ||
-			    (IS_PPPQ_MODE && !IS_DSA_LAN(dev) && !IS_DSA_WAN(dev)))
+			if (FROM_EXT(skb) || skb_hnat_sport(skb) == NR_QDMA_PORT)
 				entry.ipv4_hnapt.iblk2.fqos = 0;
 			else
-				entry.ipv4_hnapt.iblk2.fqos =
-					(!IS_PPPQ_MODE || (IS_PPPQ_MODE &&
-					 (IS_DSA_1G_LAN(dev) || IS_DSA_WAN(dev))));
+				entry.ipv4_hnapt.iblk2.fqos = 1 ;
 		} else {
 			entry.ipv4_hnapt.iblk2.fqos = 0;
 		}
@@ -1902,13 +1909,10 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 				}
 			}
 
-			if (FROM_EXT(skb) ||
-			    (IS_PPPQ_MODE && !IS_DSA_LAN(dev) && !IS_DSA_WAN(dev)))
+			if (FROM_EXT(skb))
 				entry.ipv6_5t_route.iblk2.fqos = 0;
 			else
-				entry.ipv6_5t_route.iblk2.fqos =
-					(!IS_PPPQ_MODE || (IS_PPPQ_MODE &&
-					 (IS_DSA_1G_LAN(dev) || IS_DSA_WAN(dev))));
+				entry.ipv6_5t_route.iblk2.fqos = 1;
 		} else {
 			entry.ipv6_5t_route.iblk2.fqos = 0;
 		}
@@ -2038,7 +2042,7 @@ int mtk_sw_nat_hook_tx(struct sk_buff *skb, int gmac_no)
 		     (gmac_no == NR_WDMA0_PORT || gmac_no == NR_WDMA1_PORT))) {
 			entry->ipv4_hnapt.winfo.bssid = skb_hnat_bss_id(skb);
 			entry->ipv4_hnapt.winfo.wcid = skb_hnat_wc_id(skb);
-			entry->ipv4_hnapt.iblk2.fqos = (IS_HQOS_MODE) ? 1 : 0;
+			entry->ipv4_hnapt.iblk2.fqos = (IS_HQOS_MODE || IS_PPPQ_MODE) ? 1 : 0;
 #if defined(CONFIG_MEDIATEK_NETSYS_V2)
 			entry->ipv4_hnapt.iblk2.rxid = skb_hnat_rx_id(skb);
 			entry->ipv4_hnapt.iblk2.winfoi = 1;
@@ -2058,7 +2062,7 @@ int mtk_sw_nat_hook_tx(struct sk_buff *skb, int gmac_no)
 					entry->ipv4_hnapt.vlan1 = 2;
 			}
 
-			if (IS_HQOS_MODE &&
+			if((IS_HQOS_MODE || IS_PPPQ_MODE) &&
 			    (FROM_GE_LAN(skb) || FROM_GE_WAN(skb) || FROM_GE_VIRTUAL(skb))) {
 				bfib1_tx.vpm = 0;
 				bfib1_tx.vlan_layer = 1;
@@ -2076,7 +2080,7 @@ int mtk_sw_nat_hook_tx(struct sk_buff *skb, int gmac_no)
 		     (gmac_no == NR_WDMA0_PORT || gmac_no == NR_WDMA1_PORT))) {
 			entry->ipv6_5t_route.winfo.bssid = skb_hnat_bss_id(skb);
 			entry->ipv6_5t_route.winfo.wcid = skb_hnat_wc_id(skb);
-			entry->ipv6_5t_route.iblk2.fqos = (IS_HQOS_MODE) ? 1 : 0;
+			entry->ipv6_5t_route.iblk2.fqos = (IS_HQOS_MODE || IS_PPPQ_MODE) ? 1 : 0;
 #if defined(CONFIG_MEDIATEK_NETSYS_V2)
 			entry->ipv6_5t_route.iblk2.rxid = skb_hnat_rx_id(skb);
 			entry->ipv6_5t_route.iblk2.winfoi = 1;
@@ -2096,7 +2100,7 @@ int mtk_sw_nat_hook_tx(struct sk_buff *skb, int gmac_no)
 					entry->ipv6_5t_route.vlan1 = 2;
 			}
 
-			if (IS_HQOS_MODE &&
+			if ((IS_HQOS_MODE || IS_PPPQ_MODE) &&
 			    (FROM_GE_LAN(skb) || FROM_GE_WAN(skb) || FROM_GE_VIRTUAL(skb))) {
 				bfib1_tx.vpm = 0;
 				bfib1_tx.vlan_layer = 1;
@@ -2321,9 +2325,13 @@ static unsigned int mtk_hnat_nf_post_routing(
 
 		if (fn && !mtk_hnat_accel_type(skb))
 			break;
+			
+		if (!fn) {
+			memcpy(hw_path.eth_dest, eth_hdr(skb)->h_dest, ETH_ALEN);
+			memcpy(hw_path.eth_src, eth_hdr(skb)->h_source, ETH_ALEN);
+		} else if (fn(skb, arp_dev, &hw_path)) {
+			break;}
 
-		if (fn && fn(skb, arp_dev, &hw_path))
-			break;
 		spin_lock(&hnat_priv->entry_lock);
 		skb_to_hnat_info(skb, out, entry, &hw_path);
 		spin_unlock(&hnat_priv->entry_lock);

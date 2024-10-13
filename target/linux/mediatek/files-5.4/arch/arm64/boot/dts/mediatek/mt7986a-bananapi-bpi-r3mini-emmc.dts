@@ -202,7 +202,7 @@
 	};
 
 	gmac1: mac@1 { 
-		label = "wan";
+	
 		compatible = "mediatek,eth-mac";
 		reg = <1>;
 		phy-mode = "2500base-x";
@@ -321,12 +321,6 @@
 */
 
 &pio {
-	/* GPIO 11 NGFF_GNSS_OFF. output-high: enable, output-low: disable */
-	gnss_off {
-		gpio-hog;
-		gpios = <11 GPIO_ACTIVE_HIGH>;
-		output-high;
-	};
 
         mmc0_pins_default: mmc0-pins-50-to-61-default {
                 mux {

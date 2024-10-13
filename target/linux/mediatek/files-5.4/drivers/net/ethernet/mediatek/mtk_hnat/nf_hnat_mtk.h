@@ -120,6 +120,8 @@ struct hnat_desc {
 #define HIT_PRE_BIND 0x1A
 #define HIT_BIND_PACKET_SAMPLING 0x1B
 #define HIT_BIND_EXCEED_MTU 0x1C
+#define IPVERSION_V4 0x04
+#define IPVERSION_V6 0x06
 
 u32 hnat_tx(struct sk_buff *skb);
 u32 hnat_set_skb_info(struct sk_buff *skb, u32 *rxd);
