@@ -1020,17 +1020,6 @@ mtk_hnat_ipv6_nf_pre_routing(void *priv, struct sk_buff *skb,
 		return NF_ACCEPT;
 	}
 	
-	if (skb_hnat_iface(skb) == FOE_MAGIC_EXT)
-			clr_from_extge(skb);
-		
-	/* packets from external devices -> xxx ,step 2, learning stage */
-	if (do_ext2ge_fast_learn(state->in, skb) && (!qos_toggle ||
-		(qos_toggle && eth_hdr(skb)->h_proto != HQOS_MAGIC_TAG))) {
-		if (!do_hnat_ext_to_ge2(skb, __func__))
-			{
-				return NF_STOLEN;}
-			goto drop;
-	}
 
 	/* packets form ge -> external device
 	 * For standalone wan interface
@@ -1114,17 +1103,6 @@ mtk_hnat_ipv4_nf_pre_routing(void *priv, struct sk_buff *skb,
 		return NF_ACCEPT;
 	}
 	
-	if (skb_hnat_iface(skb) == FOE_MAGIC_EXT)
-			clr_from_extge(skb);
-		
-	/* packets from external devices -> xxx ,step 2, learning stage */
-	if (do_ext2ge_fast_learn(state->in, skb) && (!qos_toggle ||
-		(qos_toggle && eth_hdr(skb)->h_proto != HQOS_MAGIC_TAG))) {
-		if (!do_hnat_ext_to_ge2(skb, __func__))
-			{
-				return NF_STOLEN;}
-			goto drop;
-	}
 
 	/* packets form ge -> external device
 	 * For standalone wan interface
