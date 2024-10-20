@@ -1,3 +1,12 @@
+--- a/drivers/net/usb/qmi_wwan.c	2024-10-09 23:41:43.552792000 +0800
++++ b/drivers/net/usb/qmi_wwan.c	2024-10-21 00:06:04.645533920 +0800
+@@ -576,6 +576,7 @@
+ 	eth_zero_addr(eth_hdr(skb)->h_source);
+ fix_dest:
+ 	memcpy(eth_hdr(skb)->h_dest, dev->net->dev_addr, ETH_ALEN);
++	memcpy(eth_hdr(skb)->h_source, default_modem_addr, ETH_ALEN);
+ 	return 1;
+ }
 --- a/net/netfilter/nft_counter.c	2023-08-30 22:27:28.000000000 +0800
 +++ b/net/netfilter/nft_counter.c	2024-09-23 08:18:34.386516407 +0800
 @@ -13,7 +13,27 @@
