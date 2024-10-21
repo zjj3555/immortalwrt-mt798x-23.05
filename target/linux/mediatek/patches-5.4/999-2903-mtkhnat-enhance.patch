@@ -7,6 +7,7 @@
 +	memcpy(eth_hdr(skb)->h_source, default_modem_addr, ETH_ALEN);
  	return 1;
  }
+ 
 --- a/net/netfilter/nft_counter.c	2023-08-30 22:27:28.000000000 +0800
 +++ b/net/netfilter/nft_counter.c	2024-09-23 08:18:34.386516407 +0800
 @@ -13,7 +13,27 @@
