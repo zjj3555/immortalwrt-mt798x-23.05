@@ -698,7 +698,7 @@ static int hnat_probe(struct platform_device *pdev)
 	if (err < 0)
 		return -EINVAL;
 
-	strncpy(hnat_priv->wan, (char *)name, IFNAMSIZ - 1);
+	strncpy(hnat_priv->lan, "wan", IFNAMSIZ);
 	dev_info(&pdev->dev, "wan = %s\n", hnat_priv->wan);
 
 	err = of_property_read_string(np, "mtketh-lan", &name);
