@@ -872,6 +872,17 @@ unsigned int do_hnat_mape_w2l(struct sk_buff *skb, const struct net_device *in,
 }
 #endif
 
+static int hnat_ipv6_addr_equal(u32 *foe_ipv6_ptr, const struct in6_addr *target)
+{
+	struct in6_addr foe_in6_addr;
+	int i;
+
+	for (i = 0; i < 4; i++)
+		foe_in6_addr.s6_addr32[i] = htonl(foe_ipv6_ptr[i]);
+
+	return ipv6_addr_equal(&foe_in6_addr, target);
+}
+
 static unsigned int is_ppe_support_type(struct sk_buff *skb)
 {
 	struct ethhdr *eth = NULL;
@@ -1404,8 +1415,6 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 	struct ipv6hdr *ip6h;
 	struct tcpudphdr _ports;
 	const struct tcpudphdr *pptr;
-	struct nf_conn *ct;
-	enum ip_conntrack_info ctinfo;
 	u32 gmac = NR_DISCARD;
 	int udp = 0;
 	u32 qid = 0;
@@ -1416,8 +1425,6 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 	u16 h_proto = 0;
 	struct net_device *master_dev = (struct net_device *)dev;
 	struct mtk_mac *mac;
-
-	ct = nf_ct_get(skb, &ctinfo);
 	
 
 	/*do not bind multicast if PPE mcast not enable*/
@@ -1622,7 +1629,9 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 					foe->ipv6_5t_route.dport;
 			}
 
-			if (ct && (ct->status & IPS_SRC_NAT)) {
+			if (IS_IPV6_5T_ROUTE(&entry) &&
+			    (!hnat_ipv6_addr_equal(&entry.ipv6_5t_route.ipv6_sip0, &ip6h->saddr) ||
+			     !hnat_ipv6_addr_equal(&entry.ipv6_5t_route.ipv6_dip0, &ip6h->daddr))) {
 				return -1;
 			}
 
