@@ -205,6 +205,7 @@ platform_do_upgrade() {
 	cmcc,rax3000m |\
 	h3c,nx30pro |\
 	*konka,komi-a31* |\
+        *kst,wf3000a* |\
 	*nokia,ea0326gmp* |\
 	*snand*)
 		nand_do_upgrade "$1"
@@ -253,6 +254,7 @@ platform_check_image() {
 	cmcc,rax3000m* |\
 	h3c,nx30pro |\
 	*konka,komi-a31* |\
+        *kst,wf3000a* |\
 	nradio,wt9103 |\
 	*nokia,ea0326gmp* |\
         *sl,3000-emmc* |\
