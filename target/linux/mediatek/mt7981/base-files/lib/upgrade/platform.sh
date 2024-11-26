@@ -207,6 +207,7 @@ platform_do_upgrade() {
 	*konka,komi-a31* |\
         *kst,wf3000a* |\
 	*nokia,ea0326gmp* |\
+        *newland,nl-wr8103* |\
 	*snand*)
 		nand_do_upgrade "$1"
 		;;
@@ -257,6 +258,7 @@ platform_check_image() {
         *kst,wf3000a* |\
 	nradio,wt9103 |\
 	*nokia,ea0326gmp* |\
+        *newland,nl-wr8103* |\
         *sl,3000-emmc* |\
 	*snand* |\
 	*emmc*)
