@@ -91,6 +91,7 @@ cmcc,rax3000m)
 		;;
 	esac
 	;;
+*sl,3000-emmc*|\
 cmcc,rax3000m-emmc-ubootmod)
 	ubootenv_add_uci_config "/dev/mmcblk0p1" "0x0" "0x80000" "0x80000"
 	;;
