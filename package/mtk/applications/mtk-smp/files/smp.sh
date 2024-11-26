@@ -759,6 +759,7 @@ setup_model()
 	konka,komi-a31 |\
         *kst,wf3000a* |\
 	*nokia,ea0326gmp* |\
+        *newland,nl-wr8103* |\
 	nradio,wt9103 |\
         *sl,3000-emmc* |\
 	*7981*)
