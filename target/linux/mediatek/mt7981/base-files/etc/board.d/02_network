@@ -29,6 +29,7 @@ mediatek_setup_interfaces()
 	*360,t7*)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 eth1" wan
 		;;
+        *kst,wf3000a* |\
         *sl,3000-emmc* |\
 	*cetron,ct3003*)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 eth1" wan
@@ -248,6 +249,7 @@ mediatek_setup_macs()
 		echo "MacAddress=$wifi_mac" >> /etc/wireless/mediatek/mt7981.dbdc.b1.dat
 		label_mac=$lan_mac
 		;;
+        *kst,wf3000a* |\
 	*imou,lc-hx3001*)
 		if [ -n "$(mtd_get_mac_ascii u-boot-env mac)" ]; then
 			lan_mac=$(mtd_get_mac_ascii u-boot-env mac)
