@@ -760,6 +760,7 @@ setup_model()
         *kst,wf3000a* |\
 	*nokia,ea0326gmp* |\
         *newland,nl-wr8103* |\
+	*newland,nl-wr9103* |\
 	nradio,wt9103 |\
         *sl,3000-emmc* |\
 	*7981*)
