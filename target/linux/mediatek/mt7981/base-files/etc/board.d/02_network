@@ -37,6 +37,7 @@ mediatek_setup_interfaces()
 	*clt,r30b1* |\
 	h3c,nx30pro |\
 	*imou,lc-hx3001* |\
+        *newland,nl-wr8103* |\
 	*konka,komi-a31*)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3" wan
 		;;
@@ -250,6 +251,7 @@ mediatek_setup_macs()
 		label_mac=$lan_mac
 		;;
         *kst,wf3000a* |\
+        *newland,nl-wr8103* |\
 	*imou,lc-hx3001*)
 		if [ -n "$(mtd_get_mac_ascii u-boot-env mac)" ]; then
 			lan_mac=$(mtd_get_mac_ascii u-boot-env mac)
