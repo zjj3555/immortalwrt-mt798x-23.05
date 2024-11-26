@@ -759,6 +759,7 @@ setup_model()
 	konka,komi-a31 |\
 	*nokia,ea0326gmp* |\
 	nradio,wt9103 |\
+        *sl,3000-emmc* |\
 	*7981*)
 		MT7981_whnat $num_of_wifi $usbnet
 		;;
