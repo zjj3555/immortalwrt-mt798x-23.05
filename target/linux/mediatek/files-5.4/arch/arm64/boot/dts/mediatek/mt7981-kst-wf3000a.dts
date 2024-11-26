@@ -10,7 +10,7 @@
 #include "mt7981.dtsi"
 
 / {
-	model = "KST WF3000A";
+	model = "KST-WF3000A";
 	compatible = "kst,wf3000a", "mediatek,mt7981";
 
 	aliases {
