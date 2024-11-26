@@ -57,6 +57,9 @@ nradio,wt9103)
 	ucidef_set_led_default "green" "GREEN" "green:status" "1"
 	ucidef_set_led_default "blue" "BLUE" "blue:status" "0"
 	;;
+*newland,nl-wr9103*)
+        ucidef_set_led_netdev "green" "GREEN" "green:status" "wan" "link"
+	;;
 esac
 
 board_config_flush
