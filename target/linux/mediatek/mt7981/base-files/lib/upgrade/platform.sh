@@ -209,6 +209,7 @@ platform_do_upgrade() {
 	*snand*)
 		nand_do_upgrade "$1"
 		;;
+        *sl,3000-emmc* |\
 	cmcc,rax3000m-emmc |\
 	*emmc*)
 		CI_KERNPART="kernel"
@@ -254,6 +255,7 @@ platform_check_image() {
 	*konka,komi-a31* |\
 	nradio,wt9103 |\
 	*nokia,ea0326gmp* |\
+        *sl,3000-emmc* |\
 	*snand* |\
 	*emmc*)
 		# tar magic `ustar`
