@@ -67,10 +67,12 @@ bananapi,bpi-r3-mini)
 		;;
 	esac
 	;;
+cmcc,xr30|\
+cmcc,rax3000me|\
 *kst,wf3000a*|\
 cetron,ct3003-stock|\
 cetron,ct3003-ubootmod|\
-cmcc,rax3000m-nand-ubootmod|\
+cmcc,rax3000m|\
 h3c,magic-nx30-pro-nmbm|\
 netgear,wax220|\
 zbtlink,zbt-z8102ax|\
@@ -94,7 +96,8 @@ cmcc,rax3000m)
 		;;
 	esac
 	;;
-*sl,3000-emmc*|\
+cmcc,xr30-emmc|\
+sl,3000-emmc|\
 cmcc,rax3000m-emmc-ubootmod)
 	ubootenv_add_uci_config "/dev/mmcblk0p1" "0x0" "0x80000" "0x80000"
 	;;
