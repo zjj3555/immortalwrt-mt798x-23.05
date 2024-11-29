@@ -24,10 +24,7 @@ To build your own firmware you need a GNU/Linux, BSD or MacOSX system (case sens
 
   - Here is an example for Debian/Ubuntu users:<br/>
     - Method 1:
-      <details>
-        <summary>Setup dependencies via APT</summary>
 
-        ```bash
         sudo apt update -y
         sudo apt full-upgrade -y
         sudo apt install -y ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential \
@@ -38,12 +35,11 @@ To build your own firmware you need a GNU/Linux, BSD or MacOSX system (case sens
           nano ninja-build p7zip p7zip-full patch pkgconf python2.7 python3 python3-pip python3-ply \
           python3-docutils python3-pyelftools qemu-utils re2c rsync scons squashfs-tools subversion swig \
           texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
-        ```
-      </details>
+
     - Method 2:
-      ```bash
+
       sudo bash -c 'bash <(curl -s https://build-scripts.immortalwrt.org/init_build_environment.sh)'
-      ```
+
 
   Note:
   - Do everything as an unprivileged user, not root, without sudo.
@@ -72,7 +68,8 @@ To build your own firmware you need a GNU/Linux, BSD or MacOSX system (case sens
      ```
      
   6. Run `make menuconfig` to select your preferred configuration for the toolchain, target system & firmware packages.
-  7. Run `make -j$(nproc)` to build your firmware. This will download all sources, build the cross-compile toolchain and then cross-compile the GNU/Linux kernel & all chosen applications for your target system.
+  7. run `make download -j8`  8. 
+  9. Run `make V=s -j1` to build your firmware. This will download all sources, build the cross-compile toolchain and then cross-compile the GNU/Linux kernel & all chosen applications for your target system.
 
   ### Related Repositories
   The main repository uses multiple sub-repositories to manage packages of different categories. All packages are installed via the OpenWrt package manager called opkg. If you're looking to develop the web interface or port packages to ImmortalWrt, please find the fitting repository below.
