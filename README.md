@@ -70,7 +70,7 @@ To build your own firmware you need a GNU/Linux, BSD or MacOSX system (case sens
      ```
      
   6. Run `make menuconfig` to select your preferred configuration for the toolchain, target system & firmware packages.
-  7. run `make download -j8`  8. 
+  7. run `make download -j8`
   9. Run `make V=s -j1` to build your firmware. This will download all sources, build the cross-compile toolchain and then cross-compile the GNU/Linux kernel & all chosen applications for your target system.
 
   ### Related Repositories
