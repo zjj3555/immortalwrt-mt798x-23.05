@@ -35,6 +35,8 @@ mediatek_setup_interfaces()
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 eth1" wan
 		;;
 	*clt,r30b1* |\
+	*e-life,etr631-t* |\
+	*e-life,etr635-u* |\
 	h3c,nx30pro |\
 	*imou,lc-hx3001* |\
         *newland,nl-wr8103* |\
@@ -333,6 +335,8 @@ mediatek_setup_macs()
 		echo "MacAddress=$wifi_mac" >> /etc/wireless/mediatek/mt7981.dbdc.b1.dat
 		;;
 	*cmcc,a10* |\
+	*e-life,etr631-t* |\
+	*e-life,etr635-u* |\
 	*konka,komi-a31*)
 		lan_mac=$(mtd_get_mac_binary $part_name 0x2A)
 		wan_mac=$(mtd_get_mac_binary $part_name 0x24)
