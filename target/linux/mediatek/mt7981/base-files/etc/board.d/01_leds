@@ -43,6 +43,8 @@ h3c,nx30pro)
 	ucidef_set_led_default "green" "GREEN" "nx30pro:green" "1"
 	ucidef_set_led_default "red" "RED" "nx30pro:red" "0"
 	;;
+*e-life,etr631-t* |\
+*e-life,etr635-u* |\
 konka,komi-a31)
         ucidef_set_led_netdev "blue" "BLUE" "blue:status" "wan" "link"
 	;;
