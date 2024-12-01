@@ -53,7 +53,7 @@ To build your own firmware you need a GNU/Linux, BSD or MacOSX system (case sens
 
   ### Quickstart
   1. Run `git clone -b openwrt-23.05 --single-branch --filter=blob:none https://github.com/dailook/immortalwrt-mt798x-23.05` to clone the source code.
-  2. Run `cd immortalwrt` to enter source directory.
+  2. Run `cd immortalwrt-mt798x-23.05` to enter source directory.
   3. Run `./scripts/feeds update -a` to obtain all the latest package definitions defined in feeds.conf / feeds.conf.default
   4. Run `./scripts/feeds install -a` to install symlinks for all obtained packages into package/feeds/
   5. Copy the configuration file for your device from the `defconfig` directory to the project root directory and rename it `.config`
